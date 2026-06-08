@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can we have consistency, availability, AND partition tolerance? — Ameya Joshi</title>
+<link rel="canonical" href="https://dev.to/ameya_joshi_68fa01c3a1a16/can-we-have-consistency-availability-and-partition-tolerance--263p">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --bg-card: #ffffff;
+    --fg: #1a1916;
+    --fg-muted: #6b6860;
+    --fg-faint: #b0aea8;
+    --accent: #c84b1a;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.15);
+    --tag-bg: #efecea;
+    --tag-fg: #5a5852;
+    --code-bg: #f0ede8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131210;
+      --bg-card: #1c1b18;
+      --fg: #e8e5df;
+      --fg-muted: #9a9790;
+      --fg-faint: #4a4844;
+      --accent: #e8713a;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.13);
+      --tag-bg: #252320;
+      --tag-fg: #9a9790;
+      --code-bg: #252320;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── NAV ── */
+  nav {
+    border-bottom: 0.5px solid var(--border-strong);
+    padding: 0 clamp(1.5rem, 5vw, 6rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  .nav-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .nav-name span { color: var(--accent); }
+  .nav-back {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .nav-back:hover { color: var(--accent); text-decoration: none; }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 5vw, 2rem) 6rem;
+  }
+
+  /* ── HEADER ── */
+  .post-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .post-meta .dot { color: var(--border-strong); }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .tag.distributed { background: #eaf0ff; color: #2a4aaa; }
+  .tag.systems { background: #ffe8ea; color: #aa2a35; }
+  @media (prefers-color-scheme: dark) {
+    .tag.distributed { background: #0d1a33; color: #7aaaf0; }
+    .tag.systems { background: #2a0d10; color: #f07a80; }
+  }
+
+  h1.post-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--fg);
+    margin-bottom: 1.5rem;
+  }
+
+  .post-lede {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    color: var(--fg-muted);
+    font-style: italic;
+    border-left: 2px solid var(--accent);
+    padding-left: 1.2rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+
+  .divider {
+    border: none;
+    border-top: 0.5px solid var(--border-strong);
+    margin: 2.5rem 0;
+  }
+
+  /* ── PROSE ── */
+  .prose h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--fg);
+    margin: 2.5rem 0 0.8rem;
+  }
+  .prose h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin: 2rem 0 0.6rem;
+  }
+  .prose p { margin-bottom: 1.3rem; }
+  .prose strong { font-weight: 600; color: var(--fg); }
+  .prose em { font-style: italic; }
+
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    margin: 1.5rem 0;
+  }
+  .prose th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-strong);
+    color: var(--fg-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px;
+  }
+  .prose td {
+    padding: 8px 12px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--fg);
+    vertical-align: top;
+  }
+  .prose tr:last-child td { border-bottom: none; }
+
+  .prose blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 0.2rem 1.2rem;
+    margin: 1.5rem 0;
+    color: var(--fg-muted);
+    font-style: italic;
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 0.5px solid var(--border-strong);
+    margin: 2rem 0;
+  }
+
+  /* option boxes */
+  .option-box {
+    border: 0.5px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.2rem 0;
+    background: var(--bg-card);
+  }
+  .option-box .option-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .option-box p { margin-bottom: 0; }
+
+  .callout {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border-strong);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 0.97rem;
+  }
+  .callout p { margin: 0; }
+
+  /* ── FOOTER ── */
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid var(--border-strong);
+  }
+  .author-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .author-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .author-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--fg);
+  }
+  .author-bio {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-top: 2px;
+  }
+  .devto-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+    border: 0.5px solid var(--border-strong);
+    padding: 7px 14px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .devto-link:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+  .back-link {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+    margin-top: 1rem;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    nav { padding: 0 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-name" href="/">Ameya <span>Joshi</span></a>
+  <a class="nav-back" href="/">← All writings</a>
+</nav>
+
+<div class="page">
+
+  <div class="post-meta">
+    <span>Jun 7, 2026</span>
+    <span class="dot">·</span>
+    <span>8 min read</span>
+    <span class="dot">·</span>
+    <span class="tag distributed">Distributed Systems</span>
+    <span class="tag systems">Systems Design</span>
+  </div>
+
+  <h1 class="post-title">Can we have consistency, availability, AND partition tolerance?</h1>
+
+  <p class="post-lede">
+    What if you could have all three? I tried hard to prove it. The failure taught me more than the textbooks did.
+  </p>
+
+  <hr class="divider">
+
+  <div class="prose">
+
+    <p>Everyone in a distributed systems interview can recite CAP theorem like a reflex. <em>"You can only pick two."</em> Head nods all around. The conversation moves on.</p>
+
+    <p>But here's the thing — I've been building distributed infrastructure for over a decade. Kubernetes operators, multi-region control planes, private cloud deployments that bridge on-prem racks to cloud APIs. And after enough production incidents, I started asking a different question.</p>
+
+    <p><strong>What if everyone is just wrong about CAP? What if you CAN have all three?</strong></p>
+
+    <p>Let me try to prove it. And then watch it fall apart.</p>
+
+    <hr>
+
+    <h2>The Math That Makes You Confident</h2>
+
+    <p>Before I play devil's advocate, let me establish what makes the "we have consistency" argument so seductive.</p>
+
+    <p>The formula: <strong>W + R > N</strong>.</p>
+
+    <p>You have N replicas. A write acknowledges W of them. A read queries R of them. If W + R exceeds N, the write set and read set <em>must</em> overlap by the pigeonhole principle — there aren't enough nodes to keep them apart. That shared node already absorbed the write, so the read will find it.</p>
+
+    <p>With N=3, W=2, R=2: overlap = W + R - N = 1. Exactly one node is guaranteed to carry the fresh value. That's all you need.</p>
+
+    <p>One thing most people gloss over: the overlap puts the fresh value <em>somewhere</em> in your R replies. It doesn't pick it for you. You still need resolution logic — compare timestamps, apply vector clocks, pick last-write-wins. If your read just returns the first reply or trusts a majority count, the math bought you nothing.</p>
+
+    <p>And tunable consistency? It's not a different <em>guarantee</em> — it's just latency redistribution:</p>
+
+    <table>
+      <thead>
+        <tr><th>Config</th><th>Trade-off</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>W=1, R=N</td><td>Cheap writes, expensive reads</td></tr>
+        <tr><td>W=N, R=1</td><td>Expensive writes, cheap reads</td></tr>
+        <tr><td>W=2, R=2, N=3</td><td>Balanced</td></tr>
+      </tbody>
+    </table>
+
+    <p>Same consistency ceiling across all three. The W and R knobs only move where the cost lands. Still solid. So far, my attempt to break CAP has no ammunition.</p>
+
+    <hr>
+
+    <h2>My Argument: CAP Is Beatable</h2>
+
+    <p>Here's the pitch I built for myself.</p>
+
+    <blockquote>
+      <p>"What if I just add more servers? More copies of the data means more redundancy. Even if some servers go offline, enough will still be reachable to keep things consistent AND available. W + R > N still holds. Partitions handled. Everyone goes home happy."</p>
+    </blockquote>
+
+    <p>It sounds airtight. So let me try to break it — and I'll use a bank to do it, because banks make this painfully concrete.</p>
+
+    <h3>The Bank Branch Thought Experiment</h3>
+
+    <p>Imagine you run a bank with 5 branches across a city. Your rule is simple: <strong>a transaction is only official once at least 3 branches have recorded it.</strong> This way, if a branch burns down or goes offline, the other 4 can still operate.</p>
+
+    <p>Now a storm hits and knocks out communication between two parts of the city. Your 5 branches split into two isolated groups:</p>
+
+    <ul style="margin: 1rem 0 1rem 1.5rem; line-height: 2;">
+      <li><strong>Group A (minority):</strong> Branch 1 and Branch 2 — only 2 branches</li>
+      <li><strong>Group B (majority):</strong> Branch 3, Branch 4, and Branch 5 — 3 branches</li>
+    </ul>
+
+    <p>Group B is fine. Three branches can still reach agreement among themselves.</p>
+
+    <p>But a customer walks into Branch 1 — stuck in the isolated group — and wants to withdraw ₹50,000. Branch 1 can't reach the other branches to get the required 3-branch confirmation.</p>
+
+    <p>You now face a choice. This is where CAP becomes real.</p>
+
+    <div class="option-box">
+      <div class="option-label">Option A — Turn them away</div>
+      <p>You tell the customer: <em>"Sorry, our systems are down. We can't process this until we reconnect."</em> Your records stay accurate. But Branch 1 and Branch 2 are effectively closed. You protected <strong>consistency</strong> — and sacrificed <strong>availability</strong>.</p>
+    </div>
+
+    <div class="option-box">
+      <div class="option-label">Option B — Serve them anyway</div>
+      <p>You process the withdrawal. Branch 1 records it locally and adds a note: <em>"Sync this once the connection is back."</em> The customer is happy. But Branch 4, unaware of the withdrawal, returns the old balance. Two branches now have different answers for the same account. You preserved <strong>availability</strong> — and sacrificed <strong>consistency</strong>.</p>
+    </div>
+
+    <div class="callout">
+      <p><strong>There is no Option C.</strong> No matter how many branches you open, the moment a communication breakdown splits them, you face this exact same binary. I added more servers thinking I could escape this. I didn't. I just delayed the moment the storm arrived.</p>
+    </div>
+
+    <hr>
+
+    <h2>The Sloppy Quorum Trap</h2>
+
+    <p>To stay available through the partition, the system can't just refuse requests on the minority side. It uses <strong>hinted handoff</strong>: it parks the write on substitute nodes — nodes that are <em>reachable</em> but are not the intended replicas — with a sticky note: <em>"Deliver this to Node1 and Node2 once they reconnect."</em></p>
+
+    <p>The write returns W acknowledgments. Success, from the client's perspective.</p>
+
+    <p>But those acknowledgments came from the <em>wrong nodes</em> — not the real quorum members. A read comes in, hits the real replicas, finds no record of the write, and returns stale data with complete confidence.</p>
+
+    <p>The W + R > N formula is <em>technically satisfied</em> — the numbers add up — but the sets are no longer intersecting on the nodes you assumed they were. The shared node in the overlap is a ghost.</p>
+
+    <p>The math didn't lie. The assumption underneath it did.</p>
+
+    <hr>
+
+    <h2>Why Availability Always Wins the Partition Fight</h2>
+
+    <p><strong>Partition tolerance is not optional.</strong> Networks partition. Nodes crash. Packets get dropped inside data centers, not just across regions. If you run anything at meaningful scale, a partition is not a hypothetical — it's a calendar event you haven't received yet.</p>
+
+    <p>Given that P is non-negotiable, your real choice resolves to:</p>
+
+    <table>
+      <thead>
+        <tr><th>Choice</th><th>Behavior</th><th>Cost</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>CP</strong></td><td>Reject requests when quorum is unreachable</td><td>Availability sacrificed</td></tr>
+        <tr><td><strong>AP</strong></td><td>Serve requests always, sync later</td><td>Consistency sacrificed</td></tr>
+      </tbody>
+    </table>
+
+    <p>Systems like Cassandra and DynamoDB make this honest. They're AP by design — sloppy quorums, eventual consistency, read-repair, anti-entropy are all explicit mechanisms for healing state after divergence. They're not broken. They're correctly prioritizing availability and accepting the consistency cost.</p>
+
+    <p>Systems like etcd and ZooKeeper go the other way. They'll tell you <em>"I don't know"</em> rather than lie to you. Minority partitions get no writes. That's CP.</p>
+
+    <p>Both are correct choices for their use cases. What's not a valid choice is claiming you have all three.</p>
+
+    <hr>
+
+    <h2>What I Actually Learned</h2>
+
+    <p>I came into this exercise wanting to find the edge case that breaks CAP. I left with something more useful: a clearer intuition for <em>where exactly</em> the guarantee breaks.</p>
+
+    <p>W + R > N is a strong and correct guarantee — conditional on one assumption the formula itself doesn't state: <strong>every write lands on the real replicas in the real quorum</strong>. The moment a partition forces you to route around that assumption to stay available, the guarantee is void.</p>
+
+    <p>The candidates who can draw this line in a system design interview aren't just reciting theory. They've internalized that distributed systems don't fail loudly. The cluster stays "up." The writes return success. The formula adds up. And the stale data quietly becomes someone else's incident at 2am.</p>
+
+    <p>The CAP theorem doesn't tell you what to build. It tells you what question you're actually answering when you make your availability decision under partition. Answer it deliberately.</p>
+
+  </div>
+
+  <div class="post-footer">
+    <div class="author-row">
+      <div class="author-avatar">AJ</div>
+      <div>
+        <div class="author-name">Ameya Joshi</div>
+        <div class="author-bio">Principal Software Engineer · Oracle OCI · Distributed Systems & Java</div>
+      </div>
+    </div>
+    <a class="devto-link" href="https://dev.to/ameya_joshi_68fa01c3a1a16/can-we-have-consistency-availability-and-partition-tolerance--263p" target="_blank">
+      Read on Dev.to ↗
+    </a>
+    <br>
+    <a class="back-link" href="/">← Back to all writings</a>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -417,32 +417,11 @@
 
 <script>
 const posts = [
-  { date: '2025-06-02', title: 'CAP Theorem in Practice: How Real Systems Navigate Consistency vs Availability', tags: ['distributed'], slug: 'cap-theorem-practice' },
-  { date: '2025-05-20', title: 'Building a Trust Exchange Service: Zero Trust mTLS at Scale', tags: ['distributed', 'systems'], slug: 'trust-exchange-service' },
-  { date: '2025-05-08', title: 'WebSocket-Based Communication in Cloud@Customer Deployments', tags: ['distributed', 'systems'], slug: 'websocket-cloud-customer' },
-  { date: '2025-04-14', title: 'How Kubernetes Reconciliation Loops Actually Work', tags: ['systems'], slug: 'k8s-reconciliation' },
-  { date: '2025-03-28', title: 'GitOps with ArgoCD and Helm: Lessons from 700 On-Prem Deployments', tags: ['systems'], slug: 'gitops-argocd-lessons' },
-  { date: '2025-03-10', title: 'ReentrantLock vs synchronized: Java Concurrency Under the Hood', tags: ['java'], slug: 'reentrantlock-vs-synchronized' },
-  { date: '2025-02-24', title: 'ConcurrentHashMap Internals: How Java Avoids Lock Contention', tags: ['java'], slug: 'concurrenthashmap-internals' },
-  { date: '2025-02-10', title: 'System Design Interviews: Commit to Your Decisions', tags: ['career', 'systems'], slug: 'system-design-commit-decisions' },
-  { date: '2025-01-27', title: 'Consistent Hashing: Why It Matters More Than You Think', tags: ['distributed', 'databases'], slug: 'consistent-hashing' },
-  { date: '2025-01-13', title: 'Read-Your-Writes and Monotonic Reads: The Replication Problems Nobody Talks About', tags: ['distributed', 'databases'], slug: 'replication-consistency-models' },
-  { date: '2024-12-30', title: 'How I Reduced MTTR by 40% with Better Observability Pipelines', tags: ['systems'], slug: 'mttr-observability' },
-  { date: '2024-12-12', title: 'Boyer-Moore Voting Algorithm: A Beautiful O(1) Space Trick', tags: ['java'], slug: 'boyer-moore-voting' },
-  { date: '2024-11-25', title: 'Raft Consensus: Building the Intuition Before the Protocol', tags: ['distributed'], slug: 'raft-consensus-intuition' },
-  { date: '2024-11-08', title: 'Prometheus + Grafana: Building Dashboards That Actually Help', tags: ['systems'], slug: 'prometheus-grafana-dashboards' },
-  { date: '2024-10-20', title: 'Database Isolation Levels: ACID in the Real World', tags: ['databases'], slug: 'database-isolation-levels' },
-  { date: '2024-10-05', title: 'Dynamic Programming Patterns I Keep Reaching For', tags: ['java'], slug: 'dp-patterns' },
-  { date: '2024-09-18', title: 'Designing a SaaS Metering Platform: Architecture Decisions', tags: ['distributed', 'systems'], slug: 'saas-metering-platform' },
-  { date: '2024-09-03', title: 'Principal Engineer Scope: What Changes and What Doesn't', tags: ['career'], slug: 'principal-engineer-scope' },
-  { date: '2024-08-14', title: 'OAuth 2.0 and OIDC: A Spring Boot Implementation Deep Dive', tags: ['java', 'systems'], slug: 'oauth-oidc-spring-boot' },
-  { date: '2024-07-29', title: 'Bloom Filters: Approximate Membership at Scale', tags: ['distributed', 'databases'], slug: 'bloom-filters' },
-  { date: '2024-07-10', title: 'Rate Limiting Strategies for Distributed APIs', tags: ['distributed', 'systems'], slug: 'rate-limiting-strategies' },
-  { date: '2024-06-24', title: 'How OCI OKE Handles Certificate Lifecycle Rotation', tags: ['systems'], slug: 'oci-cert-rotation' },
-  { date: '2024-06-05', title: 'Kafka Partitioning: The Decisions You Make Once and Live With', tags: ['distributed'], slug: 'kafka-partitioning-decisions' },
-  { date: '2024-05-20', title: 'Tailoring Your Resume for Senior Engineering Roles', tags: ['career'], slug: 'resume-senior-roles' },
-  { date: '2024-04-30', title: 'The XY Problem in System Design Interviews', tags: ['career', 'systems'], slug: 'xy-problem-system-design' },
+  // ── ADD NEW POSTS AT THE TOP ──
+  { date: '2026-06-07', title: 'Can we have consistency, availability, AND partition tolerance?', tags: ['distributed', 'systems'], slug: 'blogs/cap-theorem' },
+  // ── ADD MORE POSTS HERE ──
 ];
+
 
 function formatDate(s) {
   const d = new Date(s + 'T00:00:00');
