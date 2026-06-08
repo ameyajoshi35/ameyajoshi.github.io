@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ameya Joshi — Writings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --bg-card: #ffffff;
+    --fg: #1a1916;
+    --fg-muted: #6b6860;
+    --fg-faint: #b0aea8;
+    --accent: #c84b1a;
+    --accent-light: #f5ebe5;
+    --accent-dim: #e8a080;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.15);
+    --tag-bg: #efecea;
+    --tag-fg: #5a5852;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131210;
+      --bg-card: #1c1b18;
+      --fg: #e8e5df;
+      --fg-muted: #9a9790;
+      --fg-faint: #4a4844;
+      --accent: #e8713a;
+      --accent-light: #2a1a10;
+      --accent-dim: #a04820;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.13);
+      --tag-bg: #252320;
+      --tag-fg: #9a9790;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ── NAV ── */
+  nav {
+    border-bottom: 0.5px solid var(--border-strong);
+    padding: 0 clamp(1.5rem, 5vw, 6rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  .nav-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+  .nav-name span { color: var(--accent); }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .nav-links a {
+    color: var(--fg-muted);
+    transition: color 0.15s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--fg); }
+  .nav-links a.active { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 6rem) 2.5rem;
+    max-width: 860px;
+  }
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--fg);
+    margin-bottom: 1.25rem;
+  }
+  .hero-desc {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    color: var(--fg-muted);
+    max-width: 560px;
+    line-height: 1.8;
+  }
+  .hero-stats {
+    margin-top: 2rem;
+    display: flex;
+    gap: 2.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  .stat-num {
+    font-size: 1.6rem;
+    font-weight: 500;
+    display: block;
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .stat-label { color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    padding: 0 clamp(1.5rem, 5vw, 6rem);
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    height: 52px;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 0.5px solid var(--border-strong);
+    color: var(--fg-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { color: var(--fg); border-color: var(--fg); }
+  .filter-btn.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 680px) 1fr;
+    padding: 0 clamp(1.5rem, 5vw, 6rem);
+  }
+  .blog-list { grid-column: 2; padding: 2.5rem 0 5rem; }
+
+  /* ── YEAR GROUP ── */
+  .year-group { margin-bottom: 3rem; }
+  .year-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  /* ── POST ROW ── */
+  .post-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 0.95rem 0;
+    border-bottom: 0.5px solid var(--border);
+    transition: background 0.1s;
+    position: relative;
+    cursor: pointer;
+  }
+  .post-row::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transform: scaleY(0.3);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .post-row:hover::before { opacity: 1; transform: scaleY(1); }
+  .post-row:hover .post-title { color: var(--accent); }
+  .post-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-faint);
+    white-space: nowrap;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  .post-content { flex: 1; min-width: 0; }
+  .post-title {
+    font-family: 'Lora', serif;
+    font-size: 1.02rem;
+    font-weight: 400;
+    color: var(--fg);
+    transition: color 0.15s;
+    line-height: 1.5;
+    display: block;
+  }
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 5px;
+  }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .tag.distributed { background: #eaf0ff; color: #2a4aaa; }
+  .tag.distributed { background: #eaf0ff; color: #2a4aaa; }
+  .tag.databases { background: #e8f5eb; color: #2a7a40; }
+  .tag.java { background: #fff4e8; color: #a05a10; }
+  .tag.career { background: #f0eaff; color: #5a2aaa; }
+  .tag.systems { background: #ffe8ea; color: #aa2a35; }
+  @media (prefers-color-scheme: dark) {
+    .tag.distributed { background: #0d1a33; color: #7aaaf0; }
+    .tag.databases { background: #0d2214; color: #6ac484; }
+    .tag.java { background: #2a1a05; color: #e0933a; }
+    .tag.career { background: #1a0d33; color: #a87af0; }
+    .tag.systems { background: #2a0d10; color: #f07a80; }
+  }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    padding: 1.5rem clamp(1.5rem, 5vw, 6rem) 0;
+    display: flex;
+    justify-content: flex-end;
+    max-width: none;
+  }
+  .search-input {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--bg-card);
+    color: var(--fg);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 8px 14px;
+    width: 240px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input::placeholder { color: var(--fg-faint); }
+  .search-input:focus { border-color: var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 0.5px solid var(--border-strong);
+    padding: 2.5rem clamp(1.5rem, 5vw, 6rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  .footer-left .footer-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+  }
+  .footer-bio {
+    font-size: 13px;
+    color: var(--fg-muted);
+    max-width: 360px;
+    line-height: 1.6;
+  }
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .footer-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-muted);
+    transition: color 0.15s;
+  }
+  .footer-link:hover { color: var(--accent); }
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-faint);
+    margin-top: 1rem;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    padding: 4rem 0;
+    text-align: center;
+    color: var(--fg-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    display: none;
+  }
+  .empty-state.visible { display: block; }
+
+  @media (max-width: 680px) {
+    .main { grid-template-columns: 1fr; }
+    .blog-list { grid-column: 1; }
+    .post-row { flex-direction: column; gap: 0.25rem; }
+    .post-date { min-width: auto; }
+    nav { padding: 0 1.25rem; }
+    .nav-links { gap: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-name" href="/">Ameya <span>Joshi</span></a>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Writings</a></li>
+    <li><a href="#">Notes</a></li>
+    <li><a href="#">Projects</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <p class="hero-label">Field notes from the trenches</p>
+  <h1>Distributed Systems,<br>Java & the Craft<br>of Engineering</h1>
+  <p class="hero-desc">
+    I write about what I build and what I learn — distributed systems, JVM internals,
+    cloud-native infrastructure, and the messy reality of engineering at scale.
+  </p>
+  <div class="hero-stats">
+    <div>
+      <span class="stat-num" id="post-count">0</span>
+      <span class="stat-label">essays</span>
+    </div>
+    <div>
+      <span class="stat-num">Weekly</span>
+      <span class="stat-label">cadence</span>
+    </div>
+    <div>
+      <span class="stat-num">14+</span>
+      <span class="stat-label">years exp</span>
+    </div>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <input class="search-input" id="search" type="text" placeholder="Search writings…" autocomplete="off">
+</div>
+
+<div class="filter-bar" id="filters">
+  <button class="filter-btn active" data-tag="all">All</button>
+  <button class="filter-btn" data-tag="distributed">Distributed Systems</button>
+  <button class="filter-btn" data-tag="databases">Databases</button>
+  <button class="filter-btn" data-tag="java">Java / JVM</button>
+  <button class="filter-btn" data-tag="systems">Systems Design</button>
+  <button class="filter-btn" data-tag="career">Career</button>
+</div>
+
+<div class="main">
+  <div class="blog-list" id="blog-list">
+    <div class="empty-state" id="empty">No writings match your search.</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">
+    <p class="footer-name">Ameya Joshi</p>
+    <p class="footer-bio">Principal Software Engineer · Oracle OCI · Pune, India.<br>Building distributed systems at scale since 2010.</p>
+    <p class="footer-copy">© 2025 Ameya Joshi</p>
+  </div>
+  <div>
+    <div class="footer-links">
+      <a class="footer-link" href="https://linkedin.com/in/ameyajoshi" target="_blank">LinkedIn</a>
+      <a class="footer-link" href="https://twitter.com/ameyajoshi" target="_blank">Twitter</a>
+      <a class="footer-link" href="https://github.com/ameyajoshi" target="_blank">GitHub</a>
+      <a class="footer-link" href="https://dev.to/ameyajoshi" target="_blank">Dev.to</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const posts = [
+  { date: '2025-06-02', title: 'CAP Theorem in Practice: How Real Systems Navigate Consistency vs Availability', tags: ['distributed'], slug: 'cap-theorem-practice' },
+  { date: '2025-05-20', title: 'Building a Trust Exchange Service: Zero Trust mTLS at Scale', tags: ['distributed', 'systems'], slug: 'trust-exchange-service' },
+  { date: '2025-05-08', title: 'WebSocket-Based Communication in Cloud@Customer Deployments', tags: ['distributed', 'systems'], slug: 'websocket-cloud-customer' },
+  { date: '2025-04-14', title: 'How Kubernetes Reconciliation Loops Actually Work', tags: ['systems'], slug: 'k8s-reconciliation' },
+  { date: '2025-03-28', title: 'GitOps with ArgoCD and Helm: Lessons from 700 On-Prem Deployments', tags: ['systems'], slug: 'gitops-argocd-lessons' },
+  { date: '2025-03-10', title: 'ReentrantLock vs synchronized: Java Concurrency Under the Hood', tags: ['java'], slug: 'reentrantlock-vs-synchronized' },
+  { date: '2025-02-24', title: 'ConcurrentHashMap Internals: How Java Avoids Lock Contention', tags: ['java'], slug: 'concurrenthashmap-internals' },
+  { date: '2025-02-10', title: 'System Design Interviews: Commit to Your Decisions', tags: ['career', 'systems'], slug: 'system-design-commit-decisions' },
+  { date: '2025-01-27', title: 'Consistent Hashing: Why It Matters More Than You Think', tags: ['distributed', 'databases'], slug: 'consistent-hashing' },
+  { date: '2025-01-13', title: 'Read-Your-Writes and Monotonic Reads: The Replication Problems Nobody Talks About', tags: ['distributed', 'databases'], slug: 'replication-consistency-models' },
+  { date: '2024-12-30', title: 'How I Reduced MTTR by 40% with Better Observability Pipelines', tags: ['systems'], slug: 'mttr-observability' },
+  { date: '2024-12-12', title: 'Boyer-Moore Voting Algorithm: A Beautiful O(1) Space Trick', tags: ['java'], slug: 'boyer-moore-voting' },
+  { date: '2024-11-25', title: 'Raft Consensus: Building the Intuition Before the Protocol', tags: ['distributed'], slug: 'raft-consensus-intuition' },
+  { date: '2024-11-08', title: 'Prometheus + Grafana: Building Dashboards That Actually Help', tags: ['systems'], slug: 'prometheus-grafana-dashboards' },
+  { date: '2024-10-20', title: 'Database Isolation Levels: ACID in the Real World', tags: ['databases'], slug: 'database-isolation-levels' },
+  { date: '2024-10-05', title: 'Dynamic Programming Patterns I Keep Reaching For', tags: ['java'], slug: 'dp-patterns' },
+  { date: '2024-09-18', title: 'Designing a SaaS Metering Platform: Architecture Decisions', tags: ['distributed', 'systems'], slug: 'saas-metering-platform' },
+  { date: '2024-09-03', title: 'Principal Engineer Scope: What Changes and What Doesn't', tags: ['career'], slug: 'principal-engineer-scope' },
+  { date: '2024-08-14', title: 'OAuth 2.0 and OIDC: A Spring Boot Implementation Deep Dive', tags: ['java', 'systems'], slug: 'oauth-oidc-spring-boot' },
+  { date: '2024-07-29', title: 'Bloom Filters: Approximate Membership at Scale', tags: ['distributed', 'databases'], slug: 'bloom-filters' },
+  { date: '2024-07-10', title: 'Rate Limiting Strategies for Distributed APIs', tags: ['distributed', 'systems'], slug: 'rate-limiting-strategies' },
+  { date: '2024-06-24', title: 'How OCI OKE Handles Certificate Lifecycle Rotation', tags: ['systems'], slug: 'oci-cert-rotation' },
+  { date: '2024-06-05', title: 'Kafka Partitioning: The Decisions You Make Once and Live With', tags: ['distributed'], slug: 'kafka-partitioning-decisions' },
+  { date: '2024-05-20', title: 'Tailoring Your Resume for Senior Engineering Roles', tags: ['career'], slug: 'resume-senior-roles' },
+  { date: '2024-04-30', title: 'The XY Problem in System Design Interviews', tags: ['career', 'systems'], slug: 'xy-problem-system-design' },
+];
+
+function formatDate(s) {
+  const d = new Date(s + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).replace(' ', ' ');
+}
+
+function getYear(s) { return s.split('-')[0]; }
+
+function render(filtered) {
+  const container = document.getElementById('blog-list');
+  const empty = document.getElementById('empty');
+  container.querySelectorAll('.year-group').forEach(e => e.remove());
+
+  if (filtered.length === 0) { empty.classList.add('visible'); return; }
+  empty.classList.remove('visible');
+
+  const grouped = {};
+  filtered.forEach(p => {
+    const y = getYear(p.date);
+    if (!grouped[y]) grouped[y] = [];
+    grouped[y].push(p);
+  });
+
+  Object.keys(grouped).sort((a,b) => b-a).forEach(year => {
+    const group = document.createElement('div');
+    group.className = 'year-group';
+
+    const label = document.createElement('div');
+    label.className = 'year-label';
+    label.textContent = year;
+    group.appendChild(label);
+
+    grouped[year].forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'post-row';
+      row.innerHTML = `
+        <span class="post-date">${formatDate(p.date)}</span>
+        <div class="post-content">
+          <span class="post-title">${p.title}</span>
+          <div class="post-tags">${p.tags.map(t => `<span class="tag ${t}">${t.replace('distributed','dist. systems').replace('java','java / jvm')}</span>`).join('')}</div>
+        </div>
+      `;
+      row.addEventListener('click', () => { window.open('/blogs/' + p.slug, '_self'); });
+      group.appendChild(row);
+    });
+
+    container.insertBefore(group, empty);
+  });
+}
+
+let activeTag = 'all';
+let searchQuery = '';
+
+function applyFilters() {
+  const q = searchQuery.toLowerCase();
+  const filtered = posts.filter(p => {
+    const matchTag = activeTag === 'all' || p.tags.includes(activeTag);
+    const matchSearch = q === '' || p.title.toLowerCase().includes(q) || p.tags.some(t => t.includes(q));
+    return matchTag && matchSearch;
+  });
+  render(filtered);
+}
+
+document.getElementById('post-count').textContent = posts.length;
+
+document.getElementById('filters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeTag = btn.dataset.tag;
+  applyFilters();
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  applyFilters();
+});
+
+applyFilters();
+</script>
+</body>
+</html>
