@@ -464,7 +464,7 @@ function render(filtered) {
           <div class="post-tags">${p.tags.map(t => `<span class="tag ${t}">${t.replace('distributed','dist. systems').replace('java','java / jvm')}</span>`).join('')}</div>
         </div>
       `;
-      row.addEventListener('click', () => { window.open('/blogs/' + p.slug, '_self'); });
+      row.addEventListener('click', () => { window.open('/' + p.slug + '.html', '_self'); });
       group.appendChild(row);
     });
 
